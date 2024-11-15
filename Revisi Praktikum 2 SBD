@@ -1,0 +1,243 @@
+---BASE PDM---
+
+create table members (
+    id char(5) not null PRIMARY key,
+    name varchar(50) not null,
+    email varchar(50) not null,
+    gender char(1) not null,
+    address varchar(100) not null
+    );
+    
+create table positions (
+    id char(5) not null PRIMARY key,
+    position_name varchar(50) not null,
+    admin_access boolean not null
+    );
+    
+create table employees (
+    id char(5) not null PRIMARY key,
+    name varchar(50) not null,
+    email varchar(50) not null,
+    gender char(1) not null,
+    address varchar(100) not null,
+    position_ID char(5) not null,
+    FOREIGN KEY (position_ID) REFERENCES positions(id) on DELETE cascade on update cascade
+    );
+
+create table phone_number (
+	phone_number varchar (13) not null,
+    member_ID char(5) not null,
+    employee_ID char(5) not null,
+    FOREIGN KEY (member_ID) REFERENCES members(id) on DELETE cascade on update cascade,
+    FOREIGN KEY (employee_ID) REFERENCES employees(id) on DELETE cascade on update cascade
+    );
+    
+create table genres(
+    id char(5) not null PRIMARY key,
+    genre_name varchar(50) not null,
+    description varchar(255) not null
+    );
+    
+create table books(
+    id char(5) not null PRIMARY key,
+    isbn varchar(13) not null,
+    title varchar(100) not null,
+    author_name varchar(50) not null,
+    year_published year not null,
+    synopsis varchar(255) not null,
+    stock int not null,
+    genre_id char(5) not null,
+    FOREIGN KEY (genre_ID) REFERENCES genres(id) on DELETE cascade on update cascade
+    );
+    
+create table borrows(
+    id char(5) not null PRIMARY key,
+    borrow_date date not null,
+    return_date date,
+    due_date date not null,
+    fine decimal(10,2),
+    member_id char(5) not null,
+    employee_id char(5) not null,
+    FOREIGN KEY (member_ID) REFERENCES members(id) on DELETE cascade on update cascade,
+    FOREIGN KEY (employee_ID) REFERENCES employees(id) on DELETE cascade on update cascade
+    );
+    
+create table books_borrows (
+    book_ID char(5) not null,
+    borrow_ID char(5) not null,
+    CONSTRAINT PK_books_borrows Primary Key (book_ID, borrow_ID),
+    FOREIGN KEY (book_ID) REFERENCES books(id) on DELETE cascade on update cascade,
+    FOREIGN KEY (borrow_ID) REFERENCES borrows(id) on DELETE cascade on update cascade
+    );
+
+
+--DDL--
+
+-2-
+create table authors (
+    id CHAR(5) not null PRIMARY key,
+	author_name VARCHAR(50) not null,
+	nationality VARCHAR(30) not null,
+	birthdate DATE not null
+    );
+
+create table publisher (
+    id CHAR(5) not null PRIMARY key,
+	name VARCHAR(50) not null,
+	address VARCHAR(100) not null,
+	country VARCHAR(30) not null,
+	email VARCHAR(50) not null
+    );
+
+-3-
+alter table members
+rename column id to NIK;
+
+alter table phone_number
+rename column member_id to member_NIK;
+
+alter table borrows
+rename column member_id to member_NIK;
+
+
+-4-
+drop table phone_number;
+
+alter table members
+add phone_numbers varchar(13) not null;
+
+alter table employees
+add phone_numbers varchar(13) not null;
+
+
+
+--5--
+insert into genres
+VALUES
+("GR001", "Sejarah", "Books that examine specific events or eras, providing insight into the past and its impact on the present. Usually accompanied by in-depth historical data, analysis and narrative."),
+("GR002", "Fiksi", "Imaginative stories created by writers, not based on real facts. This genre includes subgenres such as romance, fantasy, and adventure, with a focus on characters and storyline."),
+("GR003", "Pengembangan Diri", "Books that provide guidance to improve the quality of life or skills of the reader. Presents practical advice on topics such as motivation, time management, and personal problem solving."),
+("GR004", "Biografi", "Tells a person's life in detail from birth to the end of his life or now. Compiled based on facts, this story describes the character's experiences, struggles and achievements."),
+("GR005", "Referensi", "Books that function as complete reference sources, such as dictionaries, encyclopedias, or handbooks. Contains data, definitions or concepts that can be accessed as needed, without having to be read sequentially.");
+
+insert into authors
+VALUES
+("AU001", "Michael brown", "American", "1990-03-30"),
+("AU002", "Andi Saputra", "Indonesian", "1988-10-02"),
+("AU003", "Yuki Nakamura", "Japanese", "1973-01-22"),
+("AU004", "Kim Min Joon", "South Korean", "1982-04-18"),
+("AU005", "James Williams", "British", "1962-12-04");
+
+insert into publisher
+VALUES
+("PB001", "Silver Oak Publishing", "1234 Elm Street", "United States", "silveroak1234@gmail.com"),
+("PB002", "Blue Sky Books", "9012 Pine Road", "Jepang", "bluesky9012@gmail.com"),
+("PB003", "Green Leaf Press", "5678 Maple Avenue", "Indonesia", "greenleaf5678@gmail.com"),
+("PB004", "Golden Dragon Publishing", "3456 Bamboo Lane", "China", "goldendragon3456@gmail.com"),
+("PB005", "Red River Press", "7890 Cherry Blossom Drive", "France", "redriver7890@gmail.com");
+
+insert into books
+VALUES
+("BK001", "9780123456789", "Jejak Peradaban: Kisah Perjalanan Sejarah Indonesia", "Andi Saputra",  "2010", "Delving into Indonesian history, this book presents important events and influential figures who shaped the nation's civilization, bringing readers to understand the roots of Indonesian culture and identity.", "5", "GR001", "AU002", "PB003"),
+("BK002", "9781234567890", "Small Steps, Big Changes: Building Positive Habits", "Yuki Nakamura", "2005", "Discover the power of small habits that have a big impact. This book provides practical strategies for building positive habits that can change lives and improve overall well-being.", "3","GR003", "AU002", "PB002"),
+("BK003", "9782345678901", "Complete Dictionary of Information Technology Terms", "Michael brown", "2020", "A complete guide to information technology terms, this book explains basic concepts to complex technical terms, making it a useful reference resource for students and professionals.","7",  "GR005", "AU001", "PB001"),
+("BK004", "9783456789012", "Breaking Barriers: The Inspiring Story of Nelson Mandela", "James Williams",  "2018", "The extraordinary story of Nelson Mandela, a freedom fighter who overcame obstacles to fight for equality and justice. An inspiring journey of courage, sacrifice, and hope.","2", "GR004", "AU005", "PB001"),
+("BK005", "9784567890123", "Light at the End of the Road: A Story of Hope", "Kim Min Joon", "2024", "In a journey full of challenges, a character finds the strength of hope and friendship. This novel invites readers to reflect on the meaning of life and the importance of believing in a better future.", "4", "GR002", "AU004", "PB004");
+
+insert into positions
+VALUES
+("PS001", "Librarian", 1),
+("PS002", "Cleaning", 0),
+("PS003", "Security", 0);
+
+insert into employees
+VALUES
+("EM001", "Andi Gading", "andi@gmail.com", "P", "Jl. Merdeka No.10", "PS001", "081628492610"),
+("EM002", "Budi Sitombing", "budi@gmail.com", "L",  "Jl. Sukun Raya No.25", "PS003", "085864927581"),
+("EM003", "Jennifer Tina", "tina@gmail.com", "P", "Jl. Pahlawan No.5", "PS001", "089603471812"),
+("EM004", "Lili Sari", "lili@gmail.com", "P", "Jl. Cendana No.8", "PS002", "088385793136"),
+("EM005", "Alexander Agus", "agus@gmail.com", "L", "Jl. Bunga No.12", "PS001", "088273659814");
+
+insert into employees
+VALUES
+("3326162409040002", "Citra Kirana", "citra@gmail.com", "P", "Jl. Cinta No.45", "088374628921"),
+("3525017006950028", "Jasmine Neroli", "jasmine@gmail.com", "P", "Jl. Melati No.9", "083285716164"),
+("3525017006520020", "Nico Parto", "nico@gmail.com", "L", "Jl. Kenanga No.33", "089675329117"),
+("3305040901072053", "Teddy Widodo", "teddy@gmail.com", "L", "Jl. Anggrek No.17", "085782306818"),
+("3326161509700004", "Beni Soeharti", "beni@gmail.com", "L", "Jl. Raya No.56", "0812345678919");
+
+insert into borrows
+VALUES
+("BR001", "2024-05-06", "2024-05-20", "2024-05-20", NULL, "3326162409040002", "EM004"),
+("BR002", "2024-07-14", "2024-07-29", "2024-07-28",  5000, "3525017006950028", "EM001"),
+("BR003", "2024-09-22", "2024-10-08", "2024-10-06", 10000, "3525017006520020", "EM003"),
+("BR004", "2024-10-03", "2024-10-20", "2024-10-17", 15000, "3305040901072053", "EM002"),
+("BR005", "2024-11-02", NULL, "2024-11-16", NULL, "3326161509700004", "EM005");
+
+insert into books_borrows
+VALUES
+("BK001","BR001"),
+("BK003","BR002"),
+("BK001","BR002"),
+("BK004","BR003"),
+("BK005","BR004"),
+("BK002","BR005");
+
+
+--6--
+alter table books_borrows
+DROP foreign key books_borrows_ibfk_1;
+
+alter table books_borrows
+drop foreign key books_borrows_ibfk_2;
+
+alter table books_borrows
+DROP primary KEY;
+
+alter table books_borrows
+DROP column borrow_ID;
+
+alter table books_borrows
+add borrow_ID int not null AUTO_INCREMENT PRIMARY KEY;
+
+alter table borrows DROP PRIMARY KEY;
+
+alter table borrows DROP column id;
+
+alter table borrows add column id int not null AUTO_INCREMENT Primary KEY;
+
+alter table books_borrows
+add FOREIGN KEY (book_ID) REFERENCES books(id) on delete cascade on update cascade;
+
+--7--
+UPDATE borrows
+set return_date = CURRENT_DATE
+where member_NIK = 3326161509700004;
+
+
+--8--
+UPDATE borrows
+set fine = null
+where member_NIK = 3525017006520020 and member_NIK = 3305040901072053.;
+
+-9-
+insert into borrows (borrow_date, return_date, due_date, fine, member_NIK, employee_ID)
+VALUES
+("2024-11-03", NULL, "2024-11-17", NULL, "3326161509700004", "EM005");
+
+-10-
+insert into employees
+VALUES
+("EM006", "Aspas Gata", "aspasgata@gmail.com", "L", "Jl. Badut No.62", "PS001", "0895323390308");
+
+-11-
+update employees
+set name = "Andi Haki", gender = "L", phone_numbers = "081628492611"
+where name = "Andi Gading";
+
+-12-
+delete from members
+where name = "Jasmine Neroli";
+
+delete from employees
+where name = "Aspas Gata";
